@@ -1,0 +1,34 @@
+name: Skill proposal
+description: Propose a new skill or a substantial change
+title: "Skill proposal: "
+labels: []
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem should the skill address, and who may experience it?
+    validations:
+      required: true
+  - type: textarea
+    id: success
+    attributes:
+      label: Success
+      description: What would a useful result look like?
+    validations:
+      required: true
+  - type: textarea
+    id: lived_experience
+    attributes:
+      label: Relevant experience and evidence
+      description: Share non-private research, testing, or lived-experience context. You do not need to disclose a diagnosis.
+  - type: textarea
+    id: risks
+    attributes:
+      label: Safety, privacy, and accessibility risks
+      description: What could go wrong, and what must the skill never do?
+  - type: textarea
+    id: testing
+    attributes:
+      label: Proposed testing
+      description: Name realistic tasks, products or models, objective checks, and human review needed.
