@@ -15,17 +15,44 @@ def read_frontmatter(path: Path) -> dict[str, str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         raise ValueError("missing opening frontmatter marker")
-    parts = text.split("---\n", 2)
-    if len(parts) < 3:
+    lines = text.splitlines()
+    try:
+        closing_index = lines.index("---", 1)
+    except ValueError:
         raise ValueError("missing closing frontmatter marker")
     data: dict[str, str] = {}
-    for line in parts[1].splitlines():
+    index = 1
+    block_markers = {">", ">-", ">+", "|", "|-", "|+"}
+    while index < closing_index:
+        line = lines[index]
         if not line.strip():
+            index += 1
             continue
+        if line.lstrip().startswith("#"):
+            index += 1
+            continue
+        if line[:1].isspace():
+            raise ValueError(f"unexpected indented frontmatter line: {line}")
         if ":" not in line:
             raise ValueError(f"invalid frontmatter line: {line}")
         key, value = line.split(":", 1)
-        data[key.strip()] = value.strip().strip('"').strip("'")
+        key = key.strip()
+        value = value.strip()
+        if value in block_markers:
+            chunks: list[str] = []
+            index += 1
+            while index < closing_index:
+                continuation = lines[index]
+                if continuation and not continuation[:1].isspace():
+                    break
+                if continuation.strip():
+                    chunks.append(continuation.strip())
+                index += 1
+            separator = " " if value.startswith(">") else "\n"
+            data[key] = separator.join(chunks).strip()
+            continue
+        data[key] = value.strip('"').strip("'")
+        index += 1
     return data
 
 
